@@ -1,103 +1,138 @@
-import Image from "next/image";
+import { GSMArenaScraper } from "@/modules/scraper/gsmArena/home/home";
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch('https://www.gsmarena.com');
+  const html = await res.text();
+  const scraper = new GSMArenaScraper(html);
+
+  const [
+    featuredNews,
+    regularNews,
+    latestDevices,
+    topByInterest,
+    comparisons
+  ] = await Promise.all([
+    scraper.scrapeFeaturedNews(),
+    scraper.scrapeRegularNews(),
+    scraper.scrapeLatestDevices(),
+    scraper.scrapeTopDevicesByInterest(),
+    scraper.scrapePopularComparisons()
+  ]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen p-8 bg-gray-50">
+      {/* Featured News Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Featured News</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featuredNews.map((article, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48">
+                <img
+                  src={article.imageUrl || '/placeholder.jpg'}
+                  alt={article.title}
+                  // fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{article.timestamp}</span>
+                  <span>{article.comments} comments</span>
+                </div>
+                <a
+                  href={article.url}
+                  className="mt-4 inline-block text-blue-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read more →
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Latest News Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Latest News</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {regularNews.map((article, index) => (
+            <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+              <h3 className="font-semibold mb-2">{article.title}</h3>
+              <p className="text-gray-600 text-sm mb-3 line-clamp-3">{article.summary}</p>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{article.timestamp}</span>
+                <span>{article.comments} comments</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Latest Devices Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">New Devices</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {latestDevices.map((device, index) => (
+            <div key={index} className="bg-white p-4 rounded-lg shadow-md text-center">
+              <div className="relative h-32 mb-4">
+                <img
+                  src={device.imageUrl}
+                  alt={device.name}
+                  // fill
+                  className="object-contain"
+                />
+              </div>
+              <h3 className="font-medium text-gray-800">{device.name}</h3>
+              <a
+                href={device.url}
+                className="text-blue-600 text-sm hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View specs
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Top Devices Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Top Devices</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4">Most Popular</h3>
+            {topByInterest.map((device, index) => (
+              <div key={index} className="flex justify-between items-center py-2 border-b">
+                <span className="text-gray-600">#{device.rank} {device.name}</span>
+                <span className="text-sm text-gray-500">{device.hits} views</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comparisons Section */}
+      <section>
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Popular Comparisons</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          {comparisons.map((comparison, index) => (
+            <a
+              key={index}
+              href={comparison.url}
+              className="block py-2 hover:bg-gray-100 px-2 rounded"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {comparison.title}
+            </a>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
