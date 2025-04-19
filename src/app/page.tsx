@@ -1,4 +1,6 @@
 import { GSMArenaScraper } from "@/modules/scraper/gsmArena/home/home";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   const res = await fetch('https://www.gsmarena.com');
@@ -20,118 +22,134 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-8 bg-background">
       {/* Featured News Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Featured News</h2>
+        <h2 className="text-3xl font-bold mb-6">Featured News</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {featuredNews.map((article, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-48">
-                <img
-                  src={article.imageUrl || '/placeholder.jpg'}
-                  alt={article.title}
-                  // fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
-                <div className="flex justify-between text-sm text-gray-600">
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="p-0">
+                <div className="relative h-48">
+                  <img
+                    src={article.imageUrl || '/placeholder.jpg'}
+                    alt={article.title}
+                    className="object-cover w-full h-full rounded-t-lg"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <CardTitle className="text-xl">{article.title}</CardTitle>
+                <div className="flex justify-between mt-4 text-sm text-muted-foreground">
                   <span>{article.timestamp}</span>
                   <span>{article.comments} comments</span>
                 </div>
-                <a
-                  href={article.url}
-                  className="mt-4 inline-block text-blue-600 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Read more →
-                </a>
-              </div>
-            </div>
+              </CardContent>
+              <CardFooter>
+                <Button variant="outline" className="w-full" asChild>
+                  <a href={article.url} target="_blank" rel="noopener noreferrer">
+                    Read more
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </section>
 
       {/* Latest News Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Latest News</h2>
+        <h2 className="text-3xl font-bold mb-6">Latest News</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {regularNews.map((article, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-              <h3 className="font-semibold mb-2">{article.title}</h3>
-              <p className="text-gray-600 text-sm mb-3 line-clamp-3">{article.summary}</p>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{article.timestamp}</span>
-                <span>{article.comments} comments</span>
-              </div>
-            </div>
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <CardTitle className="text-lg">{article.title}</CardTitle>
+                <p className="text-muted-foreground text-sm mt-2 line-clamp-3">
+                  {article.summary}
+                </p>
+                <div className="flex justify-between mt-4 text-xs text-muted-foreground">
+                  <span>{article.timestamp}</span>
+                  <span>{article.comments} comments</span>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
       {/* Latest Devices Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">New Devices</h2>
+        <h2 className="text-3xl font-bold mb-6">New Devices</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {latestDevices.map((device, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg shadow-md text-center">
-              <div className="relative h-32 mb-4">
-                <img
-                  src={device.imageUrl}
-                  alt={device.name}
-                  // fill
-                  className="object-contain"
-                />
-              </div>
-              <h3 className="font-medium text-gray-800">{device.name}</h3>
-              <a
-                href={device.url}
-                className="text-blue-600 text-sm hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View specs
-              </a>
-            </div>
+            <Card key={index} className="hover:shadow-lg transition-shadow text-center">
+              <CardContent className="p-4">
+                <div className="relative h-32 mb-4">
+                  <img
+                    src={device.imageUrl}
+                    alt={device.name}
+                    className="object-contain w-full h-full"
+                  />
+                </div>
+                <CardTitle className="text-base">{device.name}</CardTitle>
+                <Button variant="link" size="sm" className="mt-2" asChild>
+                  <a href={device.url} target="_blank" rel="noopener noreferrer">
+                    View specs
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
       {/* Top Devices Section */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Top Devices</h2>
+        <h2 className="text-3xl font-bold mb-6">Top Devices</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Most Popular</h3>
-            {topByInterest.map((device, index) => (
-              <div key={index} className="flex justify-between items-center py-2 border-b">
-                <span className="text-gray-600">#{device.rank} {device.name}</span>
-                <span className="text-sm text-gray-500">{device.hits} views</span>
-              </div>
-            ))}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Most Popular</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {topByInterest.map((device, index) => (
+                <div 
+                  key={index} 
+                  className="flex justify-between items-center py-2 border-b"
+                >
+                  <span className="text-muted-foreground">
+                    #{device.rank} {device.name}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {device.hits} views
+                  </span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </section>
 
       {/* Comparisons Section */}
       <section>
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Popular Comparisons</h2>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          {comparisons.map((comparison, index) => (
-            <a
-              key={index}
-              href={comparison.url}
-              className="block py-2 hover:bg-gray-100 px-2 rounded"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {comparison.title}
-            </a>
-          ))}
-        </div>
+        <h2 className="text-3xl font-bold mb-6">Popular Comparisons</h2>
+        <Card>
+          <CardContent className="p-6">
+            {comparisons.map((comparison, index) => (
+              <a
+                key={index}
+                href={comparison.url}
+                className="flex items-center justify-between p-2 hover:bg-accent rounded-md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="text-sm">{comparison.title}</span>
+                <span className="text-primary">→</span>
+              </a>
+            ))}
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
